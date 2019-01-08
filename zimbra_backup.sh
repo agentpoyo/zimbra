@@ -23,17 +23,17 @@ DOMAIN=$2
 BACKUPDIR=/mnt/BACKUP/backups
 
 # Let's create a list of acounts to backup from but lets make a new list based on accounts present:
-if [ -e $BACKUPDIR/$DOMAIN_accounts.list ]; then
-	rm -f $BACKUPDIR/$DOMAIN_accounts.list
+if [ -e $BACKUPDIR/."$DOMAIN"_accounts.list ]; then
+	rm -f $BACKUPDIR/."$DOMAIN"_accounts.list
 fi
 
 # Let's exclude the galsync accounts as they're not needed (we grep with @ as zmaccts grabs other cruft that isn't a email account):
 # You can alter the grep to exclude accounts or add as you see fit.
-zmaccts | grep "@$DOMAIN" | grep -v galsync | cut -d" " -f1 >> $BACKUPDIR/$DOMAIN_accounts.list
+zmaccts | grep "@$DOMAIN" | grep -v galsync | cut -d" " -f1 >> $BACKUPDIR/."$DOMAIN"_accounts.list
 
 full_backup ()
 {
-	for ACCT in `cat $BACKUPDIR/$DOMAIN_accounts.list`
+	for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
 		do
 			zmmailbox -z -m $ACCT gru -u https://localhost "//?fmt=tgz" > $BACKUPDIR/full/${ACCT}_FULL_${DATE}.tgz
 			SIZE=`stat --printf="%s" $BACKUPDIR/full/"$ACCT"_FULL_$DATE.tgz`
@@ -43,7 +43,7 @@ full_backup ()
 
 diff_backup ()
 {
-	for ACCT in `cat $BACKUPDIR/$DOMAIN_accounts.list`
+	for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
 		do
 			zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${WEEKAGO}" > $BACKUPDIR/diff/${ACCT}_DIFF_${DATE}.tgz
 			SIZE=`stat --printf="%s" $BACKUPDIR/diff/"$ACCT"_DIFF_$DATE.tgz`
@@ -53,12 +53,15 @@ diff_backup ()
 
 inc_backup ()
 {
-    for ACCT in `cat $BACKUPDIR/$DOMAIN_accounts.list`
+    for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
         do
             zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${YESTERDAY}" > $BACKUPDIR/inc/${ACCT}_INC_${DATE}.tgz
 			SIZE=`stat --printf="%s" $BACKUPDIR/inc/"$ACCT"_INC_$DATE.tgz`
 			echo "Backup date and time: `date` - Incremental backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/inc_backup_$DATE.log
         done
+	# Let's remove all the incrementals that were 0 bytes in size (sometimes people have no new email):
+	/bin/find $BACKUPDIR/inc/*.tgz -type f -size 0 -exec rm -rf {} \;
+
 }
 
 usage ()
