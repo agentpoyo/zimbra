@@ -18,7 +18,7 @@
 
 DATE=`date +%Y%m%d`
 WEEKAGO=$(date -d "$date -8 days" +"%m/%d/%Y")
-YESTERDAY=$(date -d "$date -1 days" +"%m/%d/%Y")
+YESTERDAY=$(date -d "$date -2 days" +"%m/%d/%Y")
 DOMAIN=$2
 BACKUPDIR=/mnt/BACKUP/backups
 
