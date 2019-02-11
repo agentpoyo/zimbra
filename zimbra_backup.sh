@@ -33,31 +33,35 @@ zmaccts | grep "@$DOMAIN" | grep -v galsync | cut -d" " -f1 >> $BACKUPDIR/."$DOM
 
 full_backup ()
 {
-	for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
-		do
-			zmmailbox -z -m $ACCT gru -u https://localhost "//?fmt=tgz" > $BACKUPDIR/full/${ACCT}_FULL_${DATE}.tgz
-			SIZE=`stat --printf="%s" $BACKUPDIR/full/"$ACCT"_FULL_$DATE.tgz`
-			echo "Backup date and time: `date` - Full backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/full_backup_$DATE.log
-		done
+    for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
+	do
+		zmmailbox -z -m $ACCT gru -u https://localhost "//?fmt=tgz" > $BACKUPDIR/full/${ACCT}_FULL_${DATE}.tgz
+		SIZE=`stat --printf="%s" $BACKUPDIR/full/"$ACCT"_FULL_$DATE.tgz`
+		echo "Backup date and time: `date` - Full backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/full_backup_$DATE.log
+	done
+	# Let's remove all the fulls that were 0 bytes in size (sometimes people have no new email):
+	/bin/find $BACKUPDIR/full/*.tgz -type f -size 0 -exec rm -rf {} \;
 }
 
 diff_backup ()
 {
-	for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
-		do
-			zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${WEEKAGO}" > $BACKUPDIR/diff/${ACCT}_DIFF_${DATE}.tgz
-			SIZE=`stat --printf="%s" $BACKUPDIR/diff/"$ACCT"_DIFF_$DATE.tgz`
-			echo "Backup date and time: `date` - Differential backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/diff_backup_$DATE.log
-		done
+    for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
+	do
+		zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${WEEKAGO}" > $BACKUPDIR/diff/${ACCT}_DIFF_${DATE}.tgz
+		SIZE=`stat --printf="%s" $BACKUPDIR/diff/"$ACCT"_DIFF_$DATE.tgz`
+		echo "Backup date and time: `date` - Differential backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/diff_backup_$DATE.log
+	done
+	# Let's remove all the differentials that were 0 bytes in size (sometimes people have no new email):
+	/bin/find $BACKUPDIR/diff/*.tgz -type f -size 0 -exec rm -rf {} \;
 }
 
 inc_backup ()
 {
     for ACCT in `cat $BACKUPDIR/."$DOMAIN"_accounts.list`
         do
-            zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${YESTERDAY}" > $BACKUPDIR/inc/${ACCT}_INC_${DATE}.tgz
-			SIZE=`stat --printf="%s" $BACKUPDIR/inc/"$ACCT"_INC_$DATE.tgz`
-			echo "Backup date and time: `date` - Incremental backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/inc_backup_$DATE.log
+            	zmmailbox -z -m $ACCT gru -u https://localhost '/?fmt=tgz&query=after:'"${YESTERDAY}" > $BACKUPDIR/inc/${ACCT}_INC_${DATE}.tgz
+		SIZE=`stat --printf="%s" $BACKUPDIR/inc/"$ACCT"_INC_$DATE.tgz`
+		echo "Backup date and time: `date` - Incremental backup of $ACCT created at $SIZE bytes." >> $BACKUPDIR/logs/inc_backup_$DATE.log
         done
 	# Let's remove all the incrementals that were 0 bytes in size (sometimes people have no new email):
 	/bin/find $BACKUPDIR/inc/*.tgz -type f -size 0 -exec rm -rf {} \;
