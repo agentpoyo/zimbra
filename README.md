@@ -7,6 +7,8 @@ Hopefully these scripts are useful for others who work or deal with Zimbra.
 
 This backup script will perform a Full, Diff and Incremental backups. Designed to run once monthly for an initial FULL, Weekly Diff's and Incrementals will grab just the prior day, intended to run daily.
 
+As is, it's designed to run as a cron job just after midnight each day as the script grabs the prior day.
+
 ```
 # Basic script usage:
 $ ./zimbra_backup.sh full|diff|inc domain.com
