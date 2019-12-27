@@ -3,8 +3,8 @@
 #
 # Usage:  ./zimbra_backup backup-type domain
 # 
-# Copyright 2019 DREW BENTLEY
-# drew.bentley@gmail.com
+# Written by agentpoyo 2019-02-11
+# agentpoyo@gmail.com
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details. <http://www.gnu.org/licenses/>.
+#
 
 DATE=`date +%Y%m%d`
 WEEKAGO=$(date -d "$date -8 days" +"%m/%d/%Y")
