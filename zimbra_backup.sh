@@ -1,5 +1,4 @@
 # Script to backup Zimbra mailbox accounts.
-# Written by Drew Bentley.
 #
 # Usage:  ./zimbra_backup backup-type domain
 # 
