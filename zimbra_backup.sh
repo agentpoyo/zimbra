@@ -22,6 +22,16 @@ YESTERDAY=$(date -d "$date -2 days" +"%m/%d/%Y")
 DOMAIN=$2
 BACKUPDIR=/mnt/BACKUP/backups
 
+# Let's make sure your BACKUP directory has our intended layout to organize types of backups to keep things tidy.
+for DIR in full diff inc logs; do
+    if [ -d $BACKUPDIR/$DIR ]; then
+        echo "$DIR exists in $BACKUPDIR, all set for $DIR backups."
+    else
+        echo "$DIR not found in $BACKUPDIR, creating now."
+        mkdir -p $BACKUPDIR/$DIR
+     fi
+done
+
 # Let's create a list of acounts to backup from but lets make a new list based on accounts present:
 if [ -e $BACKUPDIR/."$DOMAIN"_accounts.list ]; then
 	rm -f $BACKUPDIR/."$DOMAIN"_accounts.list
